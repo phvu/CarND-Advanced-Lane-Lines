@@ -221,10 +221,9 @@ to make it (somewhat) works for the challenge video:
     This help the pipeline works for the challenge video, although it failed a bit 
     toward the end of that video.
     
-    I see the following improvement that should've been done (probably for future work):
-    
-    1. Some kind of smoothing is needed to make sure the lines are not changing
-    dramatically from one frame to the next.
-    2. Sanity check the quality of the detected lane. I tried to do some of this
-    in lines 33-54, but some more could be done.
-    
+I see the following improvement that should've been done (probably for future work):
+
+1. Some kind of smoothing is needed to make sure the lines are not changing
+dramatically from one frame to the next.
+2. Sanity check the quality of the detected lane. I tried to do some of this
+in lines 33-54, but some more could be done.
