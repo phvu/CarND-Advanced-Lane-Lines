@@ -51,7 +51,7 @@ class DetectLanesTest(unittest.TestCase):
             combined_binary[(s_binary == 1) | (l_binary == 1)] = 1
 
             if self.lane is None:
-                self.lane = detect_lanes.detect_lanes(combined_binary)
+                self.lane, _ = detect_lanes.detect_lanes(combined_binary)
             else:
                 self.lane = detect_lanes.infer_lanes(combined_binary, self.lane.left_fit, self.lane.right_fit)
 
@@ -135,6 +135,52 @@ class DetectLanesTest(unittest.TestCase):
             plt.axis('off')
             plt.subplot(gs[2 * idx + 1])
             plt.imshow(test_img_warp[:, :, ::-1])
+            plt.axis('off')
+        plt.show()
+
+    def test_preprocess(self):
+        files = ['test_images/test1.jpg', 'test_images/test2.jpg',
+                 'test_images/test4.jpg', 'test_images/test5.jpg']
+
+        gs = mpl.gridspec.GridSpec(len(files), 2)
+        gs.update(wspace=0.01, hspace=0.01, left=0.1, right=0.9, bottom=0.1, top=0.9)
+        plt.figure(figsize=(11, 3))
+        for idx, fname in enumerate(files):
+            test_img = cv2.imread(fname)
+            test_img_undistort = detect_lanes.undistort(test_img, self.mtx, self.dist)
+            warped = detect_lanes.warp(self.transform_matrix, test_img_undistort)
+            test_binary = detect_lanes.binarize(warped, s_thres=(100, 255), l_thres=(50, 255))
+
+            plt.subplot(gs[2 * idx])
+            plt.imshow(test_img[:, :, ::-1])
+            plt.axis('off')
+            plt.subplot(gs[2 * idx + 1])
+            plt.imshow(test_binary, cmap='gray')
+            plt.axis('off')
+        plt.show()
+
+    def test_detect_lanes(self):
+        files = ['test_images/test1.jpg', 'test_images/test2.jpg', 'test_images/test4.jpg']
+
+        gs = mpl.gridspec.GridSpec(len(files), 2)
+        gs.update(wspace=0.01, hspace=0.01, left=0.1, right=0.9, bottom=0.1, top=0.9)
+        plt.figure(figsize=(11, 3))
+        for idx, fname in enumerate(files):
+            test_img = cv2.imread(fname)
+            test_img_undistort = detect_lanes.undistort(test_img, self.mtx, self.dist)
+            warped = detect_lanes.warp(self.transform_matrix, test_img_undistort)
+            test_binary = detect_lanes.binarize(warped, s_thres=(100, 255), l_thres=(50, 255))
+
+            lane, vis_img = detect_lanes.detect_lanes(test_binary)
+            lane_img = detect_lanes.draw_lane(lane.left_fitx, lane.right_fitx, test_binary)
+            # white_mask = np.dstack((test_binary * 255, test_binary * 255, test_binary * 255))
+            lane_img = cv2.addWeighted(vis_img, 1, lane_img, 0.6, 0)
+
+            plt.subplot(gs[2 * idx])
+            plt.imshow(test_img[:, :, ::-1])
+            plt.axis('off')
+            plt.subplot(gs[2 * idx + 1])
+            plt.imshow(lane_img)
             plt.axis('off')
         plt.show()
 

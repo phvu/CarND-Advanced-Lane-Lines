@@ -237,7 +237,7 @@ def detect_lanes(binary_warped):
     out_img[nonzeroy[left_lane_inds], nonzerox[left_lane_inds]] = [255, 0, 0]
     out_img[nonzeroy[right_lane_inds], nonzerox[right_lane_inds]] = [0, 0, 255]
 
-    return Lane(left_fit, right_fit, left_fitx, right_fitx, leftx, rightx, lefty, righty)
+    return Lane(left_fit, right_fit, left_fitx, right_fitx, leftx, rightx, lefty, righty), out_img
 
 
 def infer_lanes(binary_warped, left_fit, right_fit):
@@ -363,7 +363,7 @@ class LaneDetector(object):
         warped_binary = self.preprocess(image[:, :, ::-1])
 
         if self.lane is None:
-            self.lane = detect_lanes(warped_binary)
+            self.lane, _ = detect_lanes(warped_binary)
         else:
             self.lane = infer_lanes(warped_binary, self.lane.left_fit, self.lane.right_fit)
 
