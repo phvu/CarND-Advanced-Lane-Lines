@@ -1,6 +1,7 @@
 import argparse
 import glob
 import os
+import pickle
 
 import cv2
 import numpy as np
@@ -58,6 +59,10 @@ def calibrate():
     """
     Calibrate camera using a set of chessboard images
     """
+    if os.path.exists('calibration_data.pkl'):
+        with open('calibration_data.pkl', 'rb') as f:
+            return pickle.load(f)
+
     objp = np.zeros((6 * 9, 3), np.float32)
     objp[:, :2] = np.mgrid[0:9, 0:6].T.reshape(-1, 2)
 
@@ -81,6 +86,10 @@ def calibrate():
 
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, (1280, 720), None, None)
     assert ret
+
+    with open('calibration_data.pkl', 'wb') as f:
+        pickle.dump((mtx, dist), f)
+
     return mtx, dist
 
 
